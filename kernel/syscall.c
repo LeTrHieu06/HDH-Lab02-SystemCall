@@ -130,7 +130,6 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-[SYS_ptree]   sys_ptree,
 [SYS_trace]   sys_trace,
 [SYS_sysinfo] sys_sysinfo,
 };
@@ -157,7 +156,7 @@ char *syscallnames[] = {
   [SYS_link] "link",
   [SYS_mkdir] "mkdir",
   [SYS_close] "close",
-  [SYS_ptree]   "sys_ptree",
+  [SYS_ptree]   "ptree",
   [SYS_trace] "trace",
   [SYS_sysinfo] "sysinfo",
 };
