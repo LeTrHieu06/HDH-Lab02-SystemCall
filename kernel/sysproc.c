@@ -6,6 +6,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "ptree.h"
+#include "sysinfo.h"
 extern struct proc proc[NPROC];
 
 uint64
@@ -140,6 +141,22 @@ sys_ptree(void)
     }
 
     return count;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  uint64 user_addr;
+  struct sysinfo info;
+
+  argaddr(0, &user_addr);
+
+  info.freemem = getfreemem();
+  info.nproc   = getnproc();
+
+  if(copyout(myproc()->pagetable, user_addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+  return 0;
 }
 
 uint64
