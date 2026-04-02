@@ -5,6 +5,8 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "ptree.h"
+extern struct proc proc[NPROC];
 
 uint64
 sys_exit(void)
@@ -90,4 +92,52 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64
+sys_ptree(void)
+{
+    uint64 user_buf;
+    int max;
+
+    argaddr(0, &user_buf);
+    argint(1, &max);
+
+    if(max <= 0)
+        return -1;
+
+    struct proc *p;
+    struct ptreeinfo info;
+    int count = 0;
+
+    for(p = proc; p < &proc[NPROC]; p++){
+        acquire(&p->lock);
+
+        if(p->state != UNUSED){
+            if(count >= max){
+                release(&p->lock);
+                break;
+            }
+
+            info.pid = p->pid;
+            info.ppid = p->parent ? p->parent->pid : 0;
+            info.state = p->state;
+            info.memsize = p->sz;
+            safestrcpy(info.name, p->name, sizeof(info.name));
+
+            if(copyout(myproc()->pagetable,
+                user_buf + count * sizeof(info),
+                (char *)&info,
+                sizeof(info)) < 0){
+                release(&p->lock);
+                return -1;
+            }
+
+            count++;
+        }
+
+        release(&p->lock);
+    }
+
+    return count;
 }
