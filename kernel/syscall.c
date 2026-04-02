@@ -157,6 +157,7 @@ char *syscallnames[] = {
   [SYS_link] "link",
   [SYS_mkdir] "mkdir",
   [SYS_close] "close",
+  [SYS_ptree]   "sys_ptree",
   [SYS_trace] "trace",
   [SYS_sysinfo] "sysinfo",
 };
